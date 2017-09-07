@@ -31,7 +31,7 @@ def cevir():
     research=cur.execute("SELECT id FROM language WHERE {} like '{}'".format(first_lang,text))
     for i in research.fetchone():
         iid=i
-    iid=str(iid)#Yukarıdaki satır fetchall olursa iid=iid[1]
+    iid=str(iid)
     complete=""
     findsearch=cur.execute("SELECT {} FROM language WHERE id== {}".format(second_lang,iid))
     for i in findsearch.fetchone():
