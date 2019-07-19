@@ -1,5 +1,4 @@
 from selenium import webdriver
-from getpass import getpass
 import time
 
 enterword=input("Enter word: ")
