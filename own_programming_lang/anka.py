@@ -1,3 +1,8 @@
+from string_with_arrows import *
+
+########################
+#Constants             #
+########################
 digits="0123456789"
 
 ########################
@@ -12,11 +17,16 @@ class Error:
     def as_string(self):
         result=f'{self.error_name}:{self.details}'
         result+=f'File {self.pos_start.fn}, line {self.pos_start.ln+1}'
+        #result+='\n\n'+string_with_arrows(self.pos_start.ftxt,self.pos_start,self.pos_end)
         return result
 
 class IllegalCharError(Error):
     def __init__(self,pos_start,pos_end,details):
         super().__init__(pos_start,pos_end,"Illegal Character",details)
+
+class InvalidSyntaxError(Error):
+    def __init__(self,pos_start,pos_end,details=''):
+        super().__init__(pos_start,pos_end,"Invalid Syntax",details)
 
 
 ########################
@@ -142,7 +152,37 @@ class BinOpNode:
 ########################
 #Parser                #
 ########################
-
+class Parser:
+    def __init__(self,tokens):
+        self.tokens=tokens
+        self.tok_idx=1
+        self.advance()
+    def advance(self):
+        self.tok_idx+=1
+        if self.tok_idx<len(self.tokens):
+            self.current_tok=self.tokens[self.tok_idx]
+        return self.current_tok
+    def parse(self):
+        res=self.expr()
+        return res
+    def factor(self):
+        tok=self.current_tok
+        if tok.type in (TT_INT, TT_FLOAT):
+            self.advance()
+            return NumberNode(tok)
+    def term(self):
+        return self.bin_op(self.factor,(TT_MUL,TT_DIV))
+    def expr(self):
+        return self.bin_op(self.factor,(TT_MUL,TT_DIV))
+    def bin_op(self, func, ops):
+        left=func()
+        while self.current_tok.type in ops:
+            op_tok=self.current_tok
+            self.advance()
+            right=func()
+            left=BinOpNode(left,op_tok,right)
+        return left
+    
 
 ########################
 #Run                   #
@@ -150,4 +190,9 @@ class BinOpNode:
 def run(fn,text):
     lexer=Lexer(fn,text)
     tokens,error=lexer.make_tokens()
-    return tokens, error
+    if error: return None, error
+
+    parser=Parser(tokens)
+    ast=parser.parse()
+
+    return ast, None
