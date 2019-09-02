@@ -1,4 +1,4 @@
-#repetition controller
+#repetition controller for xlsx file
 import openpyxl
 from openpyxl import Workbook
 from openpyxl import load_workbook
