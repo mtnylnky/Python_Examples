@@ -1,1 +1,1 @@
-# Python_Examples
+# Python daily scripts
